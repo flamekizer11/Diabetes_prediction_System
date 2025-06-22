@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Prediction App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🩺 Diabetes Prediction App</h1>
+            <p>Enter patient data to predict diabetes risk</p>
+        </header>
+
+        <div class="main-content">
+            <div class="form-section">
+                <form action="/predict" method="post">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="pregnancies">Pregnancies</label>
+                            <input type="number" name="pregnancies" id="pregnancies" step="1" min="0" required value="0">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="glucose">Glucose Level</label>
+                            <input type="number" name="glucose" id="glucose" step="0.1" min="0" required value="120">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="bloodpressure">Blood Pressure</label>
+                            <input type="number" name="bloodpressure" id="bloodpressure" step="0.1" min="0" required value="70">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="skinthickness">Skin Thickness</label>
+                            <input type="number" name="skinthickness" id="skinthickness" step="0.1" min="0" required value="20">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="insulin">Insulin</label>
+                            <input type="number" name="insulin" id="insulin" step="0.1" min="0" required value="80">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="bmi">BMI</label>
+                            <input type="number" name="bmi" id="bmi" step="0.1" min="0" required value="25">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="dpf">Diabetes Pedigree Function</label>
+                            <input type="number" name="dpf" id="dpf" step="0.001" min="0" required value="0.5">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="age">Age</label>
+                            <input type="number" name="age" id="age" step="1" min="0" required value="30">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="predict-btn">🔍 Predict Diabetes</button>
+                </form>
+            </div>
+
+            {% if prediction_text %}
+            <div class="result-section">
+                <div class="result-card {% if 'Diabetic' in prediction_text and 'Not' not in prediction_text %}diabetic{% else %}not-diabetic{% endif %}">
+                    <h3>{{ prediction_text }}</h3>
+                    {% if confidence %}
+                    <p class="confidence">{{ confidence }}</p>
+                    {% endif %}
+                </div>
+                
+                {% if show_plot_btn %}
+                <button id="plotBtn" class="plot-btn" onclick="generatePlots()">📊 Show Feature Analysis</button>
+                <div id="plotContainer" class="plot-container" style="display: none;">
+                    <div id="plotLoading" class="loading">Generating plots...</div>
+                    <img id="plotImage" style="display: none; width: 100%; border-radius: 10px;">
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Diabetes Prediction App. All rights reserved.</p>
+            <p>Developed by Pratik Singh </p>
+            <p><a href="https://github.com/flamekizer11" target="_blank" rel="noopener noreferrer">GitHub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        function generatePlots() {
+            const form = document.querySelector('form');
+            const formData = new FormData(form);
+            
+            document.getElementById('plotContainer').style.display = 'block';
+            document.getElementById('plotLoading').style.display = 'block';
+            document.getElementById('plotImage').style.display = 'none';
+            
+            fetch('/generate_plots', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('plotLoading').style.display = 'none';
+                if (data.plot) {
+                    document.getElementById('plotImage').src = 'data:image/png;base64,' + data.plot;
+                    document.getElementById('plotImage').style.display = 'block';
+                } else {
+                    alert('Error generating plots: ' + data.error);
+                }
+            })
+            .catch(error => {
+                document.getElementById('plotLoading').style.display = 'none';
+                alert('Error: ' + error);
+            });
+        }
+    </script>
+</body>
+</html>
