@@ -6,13 +6,13 @@ A modern Flask-based web application that predicts diabetes risk using machine l
 ## 📸 Screenshots
 Here are some screenshots of the working application:
 
-![Home Page](images/1.png)
+![Home Page](Images/1.png)
 *Main interface for entering patient data*
 
-![Prediction Results](images/2.png)
+![Prediction Results](Images/2.png)
 *Diabetes prediction results with confidence score*
 
-![Feature Analysis](images/3.png)
+![Feature Analysis](Images/3.png)
 *Interactive data visualization showing patient data vs training data(feature analysis)*
 
 ## ✨ Features
